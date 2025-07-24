@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, FC } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import './App.css'; 
 
 const Auth = lazy(() => import('auth/Auth'));
 const Ticket = lazy(() => import('ticket/Ticket'));
@@ -8,9 +9,9 @@ const Notification = lazy(() => import('notification/Notification'));
 const App: FC = () => {
   return (
     <Router>
-      <div>
-        <nav>
-          <ul>
+      <div className="app-container">
+        <nav className="navbar">
+          <ul className="nav-list">
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -26,9 +27,9 @@ const App: FC = () => {
           </ul>
         </nav>
 
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="loading">Loading...</div>}>
           <Routes>
-            <Route path="/" element={<div>Home</div>} />
+            <Route path="/" element={<div className="home">Home</div>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/ticket" element={<Ticket />} />
             <Route path="/notification" element={<Notification />} />
