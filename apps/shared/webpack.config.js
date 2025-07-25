@@ -5,16 +5,15 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
-  devtool: "source-map",
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),
     },
-    port: 5173,
+    port: 5177,
     historyApiFallback: true,
   },
   output: {
-    publicPath: "http://localhost:5173/",
+    publicPath: "http://localhost:5177/",
   },
   module: {
     rules: [
@@ -22,9 +21,10 @@ module.exports = {
         test: /\.tsx?$/,
         use: "babel-loader",
         exclude: /node_modules/,
-      }, {
+      },
+      {
         test: /\.css$/,
-        use: ["style-loader", "css-loader", "postcss-loader"],
+        use: ["style-loader", "css-loader"],
         exclude: /node_modules/,
       },
     ],
@@ -34,12 +34,12 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: "host",
-      remotes: {
-        auth: "auth@http://localhost:5176/remoteEntry.js",
-        ticket: "ticket@http://localhost:5174/remoteEntry.js",
-        notification: "notification@http://localhost:5175/remoteEntry.js",
-        shared: "shared@http://localhost:5177/remoteEntry.js",
+      name: "shared",
+      filename: "remoteEntry.js",
+      exposes: {
+        "./components": "./src/components/index.ts",
+        "./hooks": "./src/hooks/index.ts",
+        "./utils": "./src/utils/index.ts"
       },
       shared: {
         react: { 
@@ -50,11 +50,6 @@ module.exports = {
         "react-dom": { 
           singleton: true, 
           requiredVersion: "^18.2.0",
-          eager: true
-        },
-        "react-router-dom": { 
-          singleton: true, 
-          requiredVersion: "^6.11.0",
           eager: true
         },
       },

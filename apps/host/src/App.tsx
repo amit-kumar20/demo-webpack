@@ -5,6 +5,7 @@ import './App.css';
 const Auth = lazy(() => import('auth/Auth'));
 const Ticket = lazy(() => import('ticket/Ticket'));
 const Notification = lazy(() => import('notification/Notification'));
+const FormValidationExample = lazy(() => import('./components/FormValidationExample'));
 
 const App: FC = () => {
   return (
@@ -24,15 +25,19 @@ const App: FC = () => {
             <li>
               <Link to="/notification">Notification</Link>
             </li>
+            <li>
+              <Link to="/form-validation">Form Validation</Link>
+            </li>
           </ul>
         </nav>
 
         <Suspense fallback={<div className="loading">Loading...</div>}>
           <Routes>
             <Route path="/" element={<div className="home">Home</div>} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/*" element={<Auth />} />
             <Route path="/ticket" element={<Ticket />} />
             <Route path="/notification" element={<Notification />} />
+            <Route path="/form-validation" element={<FormValidationExample />} />
           </Routes>
         </Suspense>
       </div>
