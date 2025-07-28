@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // @ts-ignore
@@ -9,6 +9,7 @@ const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // ✅ initialize navigation
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +40,12 @@ const SignIn: React.FC = () => {
       }
 
       console.log('Sign in successful', user);
-      // Handle successful sign in (e.g., store user data, redirect)
+
+      // 🔐 Save user info in session/localStorage if needed
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      // 🚀 Redirect to home page
+      navigate('/');
     } catch (err) {
       setError('Invalid email or password');
       console.error('Sign in failed', err);

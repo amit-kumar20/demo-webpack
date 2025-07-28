@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -6,7 +6,7 @@ import axios from 'axios';
 const { isValidEmail, isValidPassword } = await import('shared/utils');
 
 const SignUp: React.FC = () => {
-  const [formData, setFormData] = useState<{
+  const [formData, setFormData] = React.useState<{
     email: string;
     password: string;
     confirmPassword: string;
@@ -17,7 +17,8 @@ const SignUp: React.FC = () => {
     confirmPassword: '',
     username: ''
   });
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = React.useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
   const validateField = (name: string, value: string, formValues: typeof formData) => {
     const errors: string[] = [];
@@ -75,6 +76,7 @@ const SignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors([]);
+    setSuccessMessage(null);
 
     if (!validateForm()) {
       return;
@@ -92,7 +94,14 @@ const SignUp: React.FC = () => {
       
       localStorage.setItem(formData.email, JSON.stringify(formData));
       console.log('Sign up successful', formData);
-      // Handle successful sign up (e.g., redirect to signin)
+      setSuccessMessage('Sign up successful!');
+      // Clear form fields
+      setFormData({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        username: ''
+      });
     } catch (err) {
       setErrors(['Failed to create account. Please try again.']);
       console.error('Sign up failed', err);
@@ -160,6 +169,11 @@ const SignUp: React.FC = () => {
             {errors.map((error: string, index: number) => (
               <p key={index}>{error}</p>
             ))}
+          </div>
+        )}
+        {successMessage && (
+          <div className="text-green-500 text-sm">
+            {successMessage}
           </div>
         )}
         <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 text-sm">
