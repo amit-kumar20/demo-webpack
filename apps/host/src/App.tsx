@@ -1,42 +1,47 @@
 import React, { Suspense, lazy, FC } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './App.css'; 
 
 const Auth = lazy(() => import('auth/Auth'));
 const Ticket = lazy(() => import('ticket/Ticket'));
 const Notification = lazy(() => import('notification/Notification'));
 
+const queryClient = new QueryClient();
+
 const App: FC = () => {
   return (
-    <Router>
-      <div className="app-container">
-        <nav className="navbar">
-          <ul className="nav-list">
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/auth">Auth</Link>
-            </li>
-            <li>
-              <Link to="/ticket">Ticket</Link>
-            </li>
-            <li>
-              <Link to="/notification">Notification</Link>
-            </li>
-          </ul>
-        </nav>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="app-container">
+          <nav className="navbar">
+            <ul className="nav-list">
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/auth">Auth</Link>
+              </li>
+              <li>
+                <Link to="/ticket">Ticket</Link>
+              </li>
+              <li>
+                <Link to="/notification">Notification</Link>
+              </li>
+            </ul>
+          </nav>
 
-        <Suspense fallback={<div className="loading">Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<div className="home">Home</div>} />
-            <Route path="/auth/*" element={<Auth />} />
-            <Route path="/ticket" element={<Ticket />} />
-            <Route path="/notification" element={<Notification />} />
-          </Routes>
-        </Suspense>
-      </div>
-    </Router>
+          <Suspense fallback={<div className="loading">Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<div className="home">Home</div>} />
+              <Route path="/auth/*" element={<Auth />} />
+              <Route path="/ticket" element={<Ticket />} />
+              <Route path="/notification" element={<Notification />} />
+            </Routes>
+          </Suspense>
+        </div>
+      </Router>
+    </QueryClientProvider>
   );
 };
 

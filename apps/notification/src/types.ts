@@ -10,4 +10,8 @@ export interface NotificationResponse {
   data: Notification[];
   totalPages: number;
   currentPage: number;
+  totalItems: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  itemsPerPage: number;
 }

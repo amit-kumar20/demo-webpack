@@ -22,11 +22,10 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/, // <-- Add this rule
+        test: /\.css$/,
         use: ["style-loader", "css-loader"],
         exclude: /node_modules/,
       },
-
     ],
   },
   resolve: {
@@ -53,6 +52,11 @@ module.exports = {
         "react-router-dom": { 
           singleton: true, 
           requiredVersion: "^6.11.0",
+          eager: true
+        },
+        "@tanstack/react-query": {
+          singleton: true,
+          requiredVersion: "^4.29.5",
           eager: true
         },
       },

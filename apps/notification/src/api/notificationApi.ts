@@ -14,6 +14,14 @@ const mockNotifications: Notification[] = [
   { id: 10, message: 'Ticket REQ009 has been closed', status: 'read' },
   { id: 11, message: 'New ticket REQ008 created', status: 'unread' },
   { id: 12, message: 'Ticket REQ007 deadline updated', status: 'read' },
+  { id: 13, message: 'Ticket REQ006 has been reopened', status: 'unread' },
+  { id: 14, message: 'New comment on ticket REQ005', status: 'read' },
+  { id: 15, message: 'Ticket REQ004 status changed to Blocked', status: 'unread' },
+  { id: 16, message: 'Your ticket REQ003 has been merged', status: 'read' },
+  { id: 17, message: 'Reminder: Review ticket REQ002', status: 'unread' },
+  { id: 18, message: 'Ticket REQ001 has been archived', status: 'read' },
+  { id: 19, message: 'New high priority ticket REQ000', status: 'unread' },
+  { id: 20, message: 'System maintenance completed', status: 'read' },
 ];
 
 export const fetchNotifications = async (
@@ -52,5 +60,9 @@ export const fetchNotifications = async (
     data: paginatedNotifications,
     totalPages,
     currentPage: page,
+    totalItems,
+    hasNextPage: page < totalPages,
+    hasPreviousPage: page > 1,
+    itemsPerPage: limit
   };
 };
