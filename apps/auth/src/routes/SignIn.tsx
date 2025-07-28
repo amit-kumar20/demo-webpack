@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import useCustomToast from '../hooks/useCustomToast';
 
 // @ts-ignore
 const { isValidEmail, isValidPassword } = await import('shared/utils');
 
 const SignIn: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // ✅ initialize navigation
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const navigate = useNavigate();
+  const { showSuccessToast, showErrorToast } = useCustomToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,11 +18,13 @@ const SignIn: React.FC = () => {
 
     if (!isValidEmail(email)) {
       setError('Invalid email format');
+      showErrorToast('Invalid email format');
       return;
     }
 
     if (!isValidPassword(password)) {
       setError('Invalid password format');
+      showErrorToast('Invalid password format');
       return;
     }
 
@@ -39,15 +42,21 @@ const SignIn: React.FC = () => {
         throw new Error('Invalid password');
       }
 
-      console.log('Sign in successful', user);
-
-      // 🔐 Save user info in session/localStorage if needed
+      // Save user info in localStorage
       localStorage.setItem('currentUser', JSON.stringify(user));
-
-      // 🚀 Redirect to home page
+      
+      // Show success toast and wait for animation
+      showSuccessToast('Sign in successful! Redirecting...');
+      
+      // Add a longer delay to ensure toast is visible
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Navigate to home
       navigate('/');
+
     } catch (err) {
       setError('Invalid email or password');
+      showErrorToast('Invalid email or password');
       console.error('Sign in failed', err);
     }
   };

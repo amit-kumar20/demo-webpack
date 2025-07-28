@@ -24,27 +24,26 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "postcss-loader"
-        ],
+        use: ["style-loader", "css-loader", "postcss-loader"],
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"]
+    extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      shared: path.resolve(__dirname, "../shared/src")
+    }
   },
   plugins: [
     new ModuleFederationPlugin({
       name: "auth",
       filename: "remoteEntry.js",
       exposes: {
-        "./Auth": "./src/Auth",
+        "./Auth": "./src/Auth.tsx",
       },
       remotes: {
-        shared: "shared@http://localhost:5177/remoteEntry.js",
+        shared: "shared@http://localhost:5177/remoteEntry.js"
       },
       shared: {
         react: { 

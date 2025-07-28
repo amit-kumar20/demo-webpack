@@ -1,1 +1,1 @@
-import('./bootstrap');
+export { ToastProvider, useToast } from './components/ToastProvider';

@@ -1,110 +1,83 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import useCustomToast from '../hooks/useCustomToast';
 
-// @ts-ignore
-const { isValidEmail, isValidPassword } = await import('shared/utils');
+interface FormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  username: string;
+}
 
 const SignUp: React.FC = () => {
-  const [formData, setFormData] = React.useState<{
-    email: string;
-    password: string;
-    confirmPassword: string;
-    username: string;
-  }>({
+  const { showSuccessToast, showErrorToast } = useCustomToast();
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     confirmPassword: '',
     username: ''
   });
-  const [errors, setErrors] = React.useState<string[]>([]);
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
-
-  const validateField = (name: string, value: string, formValues: typeof formData) => {
-    const errors: string[] = [];
-    
-    switch (name) {
-      case 'email':
-        if (value && !isValidEmail(value)) {
-          errors.push('Invalid email format');
-        }
-        break;
-      
-      case 'password':
-        if (value && !isValidPassword(value)) {
-          errors.push('Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number');
-        }
-        if (formValues.confirmPassword && value !== formValues.confirmPassword) {
-          errors.push('Passwords do not match');
-        }
-        break;
-      
-      case 'confirmPassword':
-        if (value && value !== formValues.password) {
-          errors.push('Passwords do not match');
-        }
-        break;
-    }
-    
-    return errors;
-  };
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: typeof formData) => {
-      const newData = {
-        ...prev,
-        [name]: value
-      };
-      
-      const newErrors = validateField(name, value, newData);
-      setErrors(newErrors);
-      return newData;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const validateForm = () => {
-    const emailErrors = validateField('email', formData.email, formData);
-    const passwordErrors = validateField('password', formData.password, formData);
-    const confirmErrors = validateField('confirmPassword', formData.confirmPassword, formData);
+    const newErrors: string[] = [];
     
-    const allErrors = [...emailErrors, ...passwordErrors, ...confirmErrors];
-    setErrors(allErrors);
-    return allErrors.length === 0;
+    if (!formData.email) {
+      newErrors.push('Email is required');
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.push('Invalid email format');
+    }
+
+    if (!formData.password) {
+      newErrors.push('Password is required');
+    } else if (formData.password.length < 6) {
+      newErrors.push('Password must be at least 6 characters');
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.push('Passwords do not match');
+    }
+
+    if (!formData.username) {
+      newErrors.push('Username is required');
+    }
+
+    setErrors(newErrors);
+    return newErrors.length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors([]);
-    setSuccessMessage(null);
 
     if (!validateForm()) {
       return;
     }
 
-    const existingUser = localStorage.getItem(formData.email);
-    if (existingUser) {
-      setErrors(['A user with this email already exists.']);
-      return;
-    }
-
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Store in localStorage for demo
       localStorage.setItem(formData.email, JSON.stringify(formData));
-      console.log('Sign up successful', formData);
-      setSuccessMessage('Sign up successful!');
-      // Clear form fields
+      
+      showSuccessToast('Account created successfully!');
       setFormData({
         email: '',
         password: '',
         confirmPassword: '',
         username: ''
       });
-    } catch (err) {
-      setErrors(['Failed to create account. Please try again.']);
-      console.error('Sign up failed', err);
+    } catch (error: unknown) {
+      showErrorToast('Failed to create account. Please try again.');
+      console.error('Sign up error:', error);
     }
   };
 
@@ -121,7 +94,6 @@ const SignUp: React.FC = () => {
             value={formData.username}
             onChange={handleChange}
             required
-            autoComplete="username"
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
@@ -134,7 +106,6 @@ const SignUp: React.FC = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            autoComplete="email"
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
@@ -147,7 +118,6 @@ const SignUp: React.FC = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            autoComplete="new-password"
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
@@ -160,23 +130,20 @@ const SignUp: React.FC = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            autoComplete="new-password"
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
         {errors.length > 0 && (
           <div className="text-red-500 text-sm">
-            {errors.map((error: string, index: number) => (
+            {errors.map((error, index) => (
               <p key={index}>{error}</p>
             ))}
           </div>
         )}
-        {successMessage && (
-          <div className="text-green-500 text-sm">
-            {successMessage}
-          </div>
-        )}
-        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 text-sm">
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 text-sm"
+        >
           Sign Up
         </button>
       </form>

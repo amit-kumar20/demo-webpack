@@ -31,6 +31,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      "shared": path.resolve(__dirname, "../shared/src")
+    }
   },
   plugins: [
     new ModuleFederationPlugin({

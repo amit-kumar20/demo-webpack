@@ -39,7 +39,8 @@ module.exports = {
       exposes: {
         "./components": "./src/components/index.ts",
         "./hooks": "./src/hooks/index.ts",
-        "./utils": "./src/utils/index.ts"
+        "./utils": "./src/utils/index.ts",
+        "./ToastProvider": "./src/components/ToastProvider/index.tsx"
       },
       shared: {
         react: { 

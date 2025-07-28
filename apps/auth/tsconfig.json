@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2020", // Modern JavaScript target
+    "target": "es2020",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": false, // Recommended if you're only using TypeScript
+    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
@@ -19,8 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "shared/*": ["../shared/src/*"]
-    },
-    "types": ["react", "react-dom"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
