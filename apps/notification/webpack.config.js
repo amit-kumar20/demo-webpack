@@ -5,15 +5,36 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
+  stats: {
+    all: false,
+    errors: true,
+    warnings: true,
+    logging: "warn",
+    colors: true,
+    timings: true,
+  },
+
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),
     },
     port: 5175,
+
+   
+    client: {
+      logging: "warn",
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
   },
+
   output: {
     publicPath: "auto",
+    clean: true,
   },
+
   module: {
     rules: [
       {
@@ -22,16 +43,17 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/, // <-- Add this rule
+        test: /\.css$/,
         use: ["style-loader", "css-loader"],
         exclude: /node_modules/,
       },
-
     ],
   },
+
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
+
   plugins: [
     new ModuleFederationPlugin({
       name: "notification",
@@ -40,23 +62,24 @@ module.exports = {
         "./Notification": "./src/Notification",
       },
       shared: {
-        react: { 
-          singleton: true, 
+        react: {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
-        "react-dom": { 
-          singleton: true, 
+        "react-dom": {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
-        "react-router-dom": { 
-          singleton: true, 
+        "react-router-dom": {
+          singleton: true,
           requiredVersion: "^6.11.0",
-          eager: true
+          eager: true,
         },
       },
     }),
+
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
