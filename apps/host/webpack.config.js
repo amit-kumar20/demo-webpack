@@ -17,7 +17,8 @@ module.exports = {
 
   devServer: {
     static: {
-      directory: path.join(__dirname, "dist"),
+      
+      directory: path.join(__dirname, "public"),
     },
     port: 5173,
     historyApiFallback: true,
@@ -45,6 +46,12 @@ module.exports = {
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
+        exclude: /node_modules/,
+      },
+      {
+       
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: "asset/resource",
         exclude: /node_modules/,
       },
     ],

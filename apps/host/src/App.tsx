@@ -1,44 +1,32 @@
-import React, { Suspense, lazy, FC } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import './App.css';
+import React, { Suspense, lazy, FC } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import "./App.css";
+import Navbar from "./Navbar";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import HelpCenter from "./pages/HelpCenter";
+import Home from "./pages/Home"; 
 
-const Auth = lazy(() => import('auth/Auth'));
-const Ticket = lazy(() => import('ticket/Ticket'));
-const MyTickets = lazy(() => import('ticket/MyTickets')); 
-const Notification = lazy(() => import('notification/Notification'));
+const Auth = lazy(() => import("auth/Auth"));
+const Ticket = lazy(() => import("ticket/Ticket"));
+const MyTickets = lazy(() => import("ticket/MyTickets"));
+const Notification = lazy(() => import("notification/Notification"));
 
 const App: FC = () => {
   return (
     <Router>
       <div className="app-container">
-        <nav className="navbar">
-          <ul className="nav-list">
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/auth">Auth</Link>
-            </li>
-            <li>
-              <Link to="/ticket">Submit Ticket</Link>
-            </li>
-            <li>
-              <Link to="/ticket/mine">My Tickets</Link> 
-            </li>
-            <li>
-              <Link to="/notification">Notification</Link>
-            </li>
-          </ul>
-        </nav>
-
+        <Navbar />
         <Suspense fallback={<div className="loading">Loading...</div>}>
           <Routes>
-            <Route path="/" element={<div className="home">Home</div>} />
+            <Route path="/" element={<Home />} /> 
             <Route path="/auth" element={<Auth />} />
             <Route path="/ticket" element={<Ticket />} />
-            <Route path="/ticket/mine" element={<MyTickets />} /> 
+            <Route path="/ticket/mine" element={<MyTickets />} />
             <Route path="/notification" element={<Notification />} />
-            <Route path="*" element={<div>404 - Page Not Found</div>} />
+            <Route path="/dashboard" element={<AnalyticsDashboard />} />
+            <Route path="/help" element={<HelpCenter />} />
+           <Route path="*" element={<Navigate to="/" replace />} />
+
           </Routes>
         </Suspense>
       </div>

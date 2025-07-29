@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './MyTickets.css';
 
 type Ticket = {
@@ -10,6 +11,10 @@ type Ticket = {
   createdAt: string;
 };
 
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
+
 const MyTickets = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [filter, setFilter] = useState({
@@ -17,6 +22,10 @@ const MyTickets = () => {
     status: '',
     program: '',
   });
+
+  const query = useQuery();
+  const navigate = useNavigate();
+  const searchQuery = query.get('search')?.toLowerCase() || '';
 
   useEffect(() => {
     const stored = localStorage.getItem('myTickets');
@@ -36,7 +45,14 @@ const MyTickets = () => {
   };
 
   const filteredTickets = tickets.filter((ticket) => {
+    const matchesSearch =
+      ticket.title.toLowerCase().includes(searchQuery) ||
+      ticket.category.toLowerCase().includes(searchQuery) ||
+      ticket.status.toLowerCase().includes(searchQuery) ||
+      ticket.program.toLowerCase().includes(searchQuery);
+
     return (
+      matchesSearch &&
       (filter.category === '' || ticket.category === filter.category) &&
       (filter.status === '' || ticket.status === filter.status) &&
       (filter.program === '' || ticket.program === filter.program)
@@ -46,6 +62,20 @@ const MyTickets = () => {
   return (
     <div className="tickets-container">
       <h2>My Tickets</h2>
+
+      {searchQuery && (
+        <div className="search-info">
+          <span>
+            Showing results for: <strong>{searchQuery}</strong>
+          </span>
+          <button
+            className="clear-search-btn"
+            onClick={() => navigate('/ticket/mine')}
+          >
+            Clear Search
+          </button>
+        </div>
+      )}
 
       <div className="filters">
         <select name="category" onChange={handleChange} value={filter.category}>
@@ -80,7 +110,7 @@ const MyTickets = () => {
             <th>Status</th>
             <th>Program</th>
             <th>Created At</th>
-            <th>Action</th> {/* New column */}
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
