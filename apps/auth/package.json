@@ -4,7 +4,8 @@
   "scripts": {
     "start": "webpack serve",
     "build": "webpack --mode production",
-    "serve": "serve dist -p 5176"
+    "serve": "serve dist -p 5176",
+    "dev": "webpack serve --config webpack.config.js --mode development"
   },
   "dependencies": {
     "axios": "^1.4.0",

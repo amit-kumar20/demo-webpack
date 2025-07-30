@@ -6,35 +6,63 @@ module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
   devtool: "source-map",
+
+  stats: {
+    all: false,
+    errors: true,
+    warnings: true,
+    logging: "warn",
+    colors: true,
+    timings: true,
+  },
+
   devServer: {
     static: {
-      directory: path.join(__dirname, "dist"),
+      directory: path.join(__dirname, "public"),
     },
     port: 5173,
     historyApiFallback: true,
+    client: {
+      logging: "warn",
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
   },
+
   output: {
     publicPath: "http://localhost:5173/",
+    clean: true,
   },
+
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         use: "babel-loader",
         exclude: /node_modules/,
-      }, {
+      },
+      {
         test: /\.css$/,
         use: ["style-loader", "css-loader", "postcss-loader"],
         exclude: /node_modules/,
       },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: "asset/resource",
+        exclude: /node_modules/,
+      },
     ],
   },
+
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
-    fallback: {
-      "shared": path.resolve(__dirname, "../shared/src")
-    }
+    alias: {
+      shared: path.resolve(__dirname, "../shared/src"),
+    },
   },
+
   plugins: [
     new ModuleFederationPlugin({
       name: "host",
@@ -45,28 +73,29 @@ module.exports = {
         shared: "shared@http://localhost:5177/remoteEntry.js",
       },
       shared: {
-        react: { 
-          singleton: true, 
+        react: {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
-        "react-dom": { 
-          singleton: true, 
+        "react-dom": {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
-        "react-router-dom": { 
-          singleton: true, 
+        "react-router-dom": {
+          singleton: true,
           requiredVersion: "^6.11.0",
-          eager: true
+          eager: true,
         },
         "@tanstack/react-query": {
           singleton: true,
           requiredVersion: "^4.29.5",
-          eager: true
+          eager: true,
         },
       },
     }),
+
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),

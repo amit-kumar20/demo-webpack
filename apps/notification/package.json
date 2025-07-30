@@ -4,7 +4,8 @@
   "scripts": {
     "start": "webpack serve",
     "build": "webpack --mode production",
-    "serve": "serve dist -p 5175"
+    "serve": "serve dist -p 5175",
+    "dev": "webpack serve --config webpack.config.js --mode development"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.40.1",
