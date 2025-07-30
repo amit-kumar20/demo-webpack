@@ -5,6 +5,7 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
+  devtool: "source-map",
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),
@@ -13,7 +14,7 @@ module.exports = {
     historyApiFallback: true,
   },
   output: {
-    publicPath: "auto",
+    publicPath: "http://localhost:5173/",
   },
   module: {
     rules: [
@@ -22,14 +23,17 @@ module.exports = {
         use: "babel-loader",
         exclude: /node_modules/,
       }, {
-        test: /\.css$/, // <-- Add this rule
-        use: ["style-loader", "css-loader"],
+        test: /\.css$/,
+        use: ["style-loader", "css-loader", "postcss-loader"],
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      "shared": path.resolve(__dirname, "../shared/src")
+    }
   },
   plugins: [
     new ModuleFederationPlugin({
@@ -38,6 +42,7 @@ module.exports = {
         auth: "auth@http://localhost:5176/remoteEntry.js",
         ticket: "ticket@http://localhost:5174/remoteEntry.js",
         notification: "notification@http://localhost:5175/remoteEntry.js",
+        shared: "shared@http://localhost:5177/remoteEntry.js",
       },
       shared: {
         react: { 
@@ -53,6 +58,11 @@ module.exports = {
         "react-router-dom": { 
           singleton: true, 
           requiredVersion: "^6.11.0",
+          eager: true
+        },
+        "@tanstack/react-query": {
+          singleton: true,
+          requiredVersion: "^4.29.5",
           eager: true
         },
       },
