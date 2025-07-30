@@ -5,6 +5,7 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
+  devtool: "source-map",
 
   stats: {
     all: false,
@@ -17,7 +18,6 @@ module.exports = {
 
   devServer: {
     static: {
-      
       directory: path.join(__dirname, "public"),
     },
     port: 5173,
@@ -32,7 +32,7 @@ module.exports = {
   },
 
   output: {
-    publicPath: "auto",
+    publicPath: "http://localhost:5173/",
     clean: true,
   },
 
@@ -45,11 +45,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader", "postcss-loader"],
         exclude: /node_modules/,
       },
       {
-       
         test: /\.(png|jpe?g|gif|svg)$/i,
         type: "asset/resource",
         exclude: /node_modules/,
@@ -59,6 +58,9 @@ module.exports = {
 
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      shared: path.resolve(__dirname, "../shared/src"),
+    },
   },
 
   plugins: [
@@ -68,6 +70,7 @@ module.exports = {
         auth: "auth@http://localhost:5176/remoteEntry.js",
         ticket: "ticket@http://localhost:5174/remoteEntry.js",
         notification: "notification@http://localhost:5175/remoteEntry.js",
+        shared: "shared@http://localhost:5177/remoteEntry.js",
       },
       shared: {
         react: {
@@ -83,6 +86,11 @@ module.exports = {
         "react-router-dom": {
           singleton: true,
           requiredVersion: "^6.11.0",
+          eager: true,
+        },
+        "@tanstack/react-query": {
+          singleton: true,
+          requiredVersion: "^4.29.5",
           eager: true,
         },
       },

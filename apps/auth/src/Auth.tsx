@@ -1,36 +1,21 @@
 import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import SignIn from './routes/SignIn';
+import SignUp from './routes/SignUp';
 
-const Auth = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Add authentication logic here
-    console.log('Login submitted');
-  };
+const Auth: React.FC = () => {
+  const location = useLocation();
+  const isRootPath = location.pathname === '/auth' || location.pathname === '/auth/';
 
   return (
-    <div className="auth-container">
-      <h2>Authentication</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            placeholder="Enter username"
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter password"
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        <Routes>
+          <Route path="signin" element={<SignIn />} />
+          <Route path="signup" element={<SignUp />} />
+          {isRootPath && <Route path="/" element={<Navigate to="signin" replace />} />}
+        </Routes>
+      </div>
     </div>
   );
 };

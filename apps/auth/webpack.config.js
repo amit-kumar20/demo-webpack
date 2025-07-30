@@ -20,6 +20,7 @@ module.exports = {
       directory: path.join(__dirname, "dist"),
     },
     port: 5176,
+    historyApiFallback: true,
     client: {
       logging: "warn",
       overlay: {
@@ -30,7 +31,7 @@ module.exports = {
   },
 
   output: {
-    publicPath: "auto",
+    publicPath: "http://localhost:5176/",
     clean: true,
   },
 
@@ -43,7 +44,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader", "postcss-loader"],
         exclude: /node_modules/,
       },
     ],
@@ -51,6 +52,9 @@ module.exports = {
 
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      shared: path.resolve(__dirname, "../shared/src"),
+    },
   },
 
   plugins: [
@@ -58,7 +62,10 @@ module.exports = {
       name: "auth",
       filename: "remoteEntry.js",
       exposes: {
-        "./Auth": "./src/Auth",
+        "./Auth": "./src/Auth.tsx",
+      },
+      remotes: {
+        shared: "shared@http://localhost:5177/remoteEntry.js",
       },
       shared: {
         react: {
