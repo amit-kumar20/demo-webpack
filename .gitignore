@@ -1,2 +1,53 @@
-node_modules
-.turbo/
+# Root node_modules
+/node_modules/
+
+# Nested node_modules in apps and packages
+apps/**/node_modules/
+packages/**/node_modules/
+
+# Build outputs (Vite, Next, etc.)
+apps/**/dist/
+apps/**/.next/
+apps/**/.turbo/
+packages/**/dist/
+packages/**/.turbo/
+
+# Cache and logs
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+turbo.log
+.vite/
+.cache/
+**/.turbo/
+*.tsbuildinfo
+
+# IDE/editor config
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# System
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*.local
+apps/**/.env
+packages/**/.env
+
+# Test/coverage
+coverage/
+*.lcov
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Misc
+*.log
+*.bak
+*.tmp
+
