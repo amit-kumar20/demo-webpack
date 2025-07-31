@@ -18,9 +18,21 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: "babel-loader",
-        exclude: /node_modules/,
+        test: /\.(ts|tsx)$/,
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, "../../packages/shared-utils/src"),
+        ],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              "@babel/preset-typescript"
+            ]
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -31,6 +43,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      '@shared-utils': path.resolve(__dirname, '../../packages/shared-utils/src'),
+    },
   },
   plugins: [
     new ModuleFederationPlugin({
@@ -40,18 +55,29 @@ module.exports = {
         "./components": "./src/components/index.ts",
         "./hooks": "./src/hooks/index.ts",
         "./utils": "./src/utils/index.ts",
-        "./ToastProvider": "./src/components/ToastProvider/index.tsx"
+        "./ToastProvider": "./src/components/ToastProvider/index.tsx",
+        "./remoteStore": "./src/store/index.ts",
       },
       shared: {
-        react: { 
-          singleton: true, 
+        react: {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
-        "react-dom": { 
-          singleton: true, 
+        "react-dom": {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
+        },
+        "react-redux": {
+          singleton: true,
+          requiredVersion: "^9.2.0",
+          eager: true,
+        },
+        "@reduxjs/toolkit": {
+          singleton: true,
+          requiredVersion: "^2.2.0",
+          eager: true,
         },
       },
     }),

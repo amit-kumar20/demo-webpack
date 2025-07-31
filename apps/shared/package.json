@@ -2,13 +2,16 @@
   "name": "shared",
   "version": "1.0.0",
   "scripts": {
-  "dev": "webpack serve --config webpack.config.js --mode development",
-  "start": "webpack serve",
-  "build": "webpack --mode production"
-},
+    "dev": "webpack serve --config webpack.config.js --mode development",
+    "start": "webpack serve",
+    "build": "webpack --mode production"
+  },
   "dependencies": {
+    "@demo-webpack/shared-utils": "1.0.0",
+    "@reduxjs/toolkit": "^2.8.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.5",
@@ -27,4 +30,3 @@
     "webpack-dev-server": "^4.15.1"
   }
 }
-

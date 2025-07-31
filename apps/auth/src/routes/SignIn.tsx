@@ -1,17 +1,18 @@
-import * as React from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import useCustomToast from '../hooks/useCustomToast';
-import { Eye, EyeOff } from 'lucide-react'; // You can replace this with any icon lib
+import { Eye, EyeOff } from 'lucide-react';
+import { isValidEmail, isValidPassword } from 'shared/utils';
+import { setUser } from '@shared-utils/store/authSlice';
 
-// @ts-ignore
-const { isValidEmail, isValidPassword } = await import('shared/utils');
-
-const SignIn: React.FC = () => {
+const SignIn = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { showSuccessToast, showErrorToast } = useCustomToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +40,9 @@ const SignIn: React.FC = () => {
       const user = JSON.parse(userData);
       if (user.password !== password) throw new Error('Invalid password');
 
+      // Update Redux store with user data
+      dispatch(setUser({ email: user.email, username: user.username }));
+      
       localStorage.setItem('currentUser', JSON.stringify(user));
       showSuccessToast('Sign in successful! Redirecting...');
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -79,7 +83,7 @@ const SignIn: React.FC = () => {
           />
           <button
             type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
+            onClick={() => setShowPassword((prev: boolean) => !prev)}
             className="absolute inset-y-0 right-2 flex items-center text-gray-500 hover:text-gray-700"
             tabIndex={-1}
           >

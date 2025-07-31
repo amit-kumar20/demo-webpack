@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import useCustomToast from '../hooks/useCustomToast';
-
-// ✅ Import shared validators (dynamic to support microfrontend federation)
-// @ts-ignore
-const { isValidEmail, isValidPassword } = await import('shared/utils');
+import { setUser } from '@shared-utils/store/authSlice';
+import { isValidEmail, isValidPassword } from 'shared/utils';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface FormData {
   email: string;
@@ -15,6 +15,8 @@ interface FormData {
 
 const SignUp: React.FC = () => {
   const { showSuccessToast, showErrorToast } = useCustomToast();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -29,7 +31,7 @@ const SignUp: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev: FormData) => ({
       ...prev,
       [name]: value
     }));
@@ -70,8 +72,29 @@ const SignUp: React.FC = () => {
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      localStorage.setItem(formData.email, JSON.stringify(formData));
-      showSuccessToast('Account created successfully!');
+      const userData = {
+        email: formData.email,
+        username: formData.username,
+        password: formData.password // Note: In a real app, never store plain text passwords
+      };
+
+      localStorage.setItem(formData.email, JSON.stringify(userData));
+
+      // Update Redux store with user data (excluding password)
+      dispatch(setUser({
+        email: formData.email,
+        username: formData.username
+      }));
+
+      // Store current user (excluding password)
+      localStorage.setItem('currentUser', JSON.stringify({
+        email: formData.email,
+        username: formData.username
+      }));
+
+      showSuccessToast('Account created successfully! Redirecting...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      navigate('/');
 
       setFormData({
         email: '',
@@ -126,10 +149,10 @@ const SignUp: React.FC = () => {
           />
           <button
             type="button"
-            className="absolute right-2 top-2 text-xs text-blue-500"
-            onClick={() => setShowPassword(prev => !prev)}
+            className="absolute right-2 top-2 text-gray-500"
+            onClick={() => setShowPassword((prev: boolean) => !prev)}
           >
-            {showPassword ? 'Hide' : 'Show'}
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
         <div className="relative">
@@ -145,16 +168,16 @@ const SignUp: React.FC = () => {
           />
           <button
             type="button"
-            className="absolute right-2 top-2 text-xs text-blue-500"
-            onClick={() => setShowConfirmPassword(prev => !prev)}
+            className="absolute right-2 top-2 text-gray-500"
+            onClick={() => setShowConfirmPassword((prev: boolean) => !prev)}
           >
-            {showConfirmPassword ? 'Hide' : 'Show'}
+            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
 
         {errors.length > 0 && (
           <div className="text-red-500 text-sm space-y-1">
-            {errors.map((error, index) => (
+            {errors.map((error: string, index: number) => (
               <p key={index}>{error}</p>
             ))}
           </div>

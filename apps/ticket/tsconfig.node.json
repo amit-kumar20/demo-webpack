@@ -4,5 +4,5 @@
     "module": "esnext",
     "moduleResolution": "node"
   },
-  "include": ["webpack.config.js"]
+  "include": ["./webpack.config.js"]
 }
