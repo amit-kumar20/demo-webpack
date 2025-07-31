@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useCustomToast from '../hooks/useCustomToast';
+
+// ✅ Import shared validators (dynamic to support microfrontend federation)
+// @ts-ignore
+const { isValidEmail, isValidPassword } = await import('shared/utils');
 
 interface FormData {
   email: string;
@@ -11,13 +15,17 @@ interface FormData {
 
 const SignUp: React.FC = () => {
   const { showSuccessToast, showErrorToast } = useCustomToast();
+
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     confirmPassword: '',
     username: ''
   });
+
   const [errors, setErrors] = useState<string[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,17 +37,17 @@ const SignUp: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: string[] = [];
-    
+
     if (!formData.email) {
       newErrors.push('Email is required');
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email)) {
       newErrors.push('Invalid email format');
     }
 
     if (!formData.password) {
       newErrors.push('Password is required');
-    } else if (formData.password.length < 6) {
-      newErrors.push('Password must be at least 6 characters');
+    } else if (!isValidPassword(formData.password)) {
+      newErrors.push('Invalid password format');
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -57,18 +65,14 @@ const SignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Store in localStorage for demo
+
       localStorage.setItem(formData.email, JSON.stringify(formData));
-      
       showSuccessToast('Account created successfully!');
+
       setFormData({
         email: '',
         password: '',
@@ -109,9 +113,9 @@ const SignUp: React.FC = () => {
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
-        <div>
+        <div className="relative">
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             name="password"
             placeholder="Password"
@@ -120,10 +124,17 @@ const SignUp: React.FC = () => {
             required
             className="w-full px-3 py-2 border rounded text-sm"
           />
+          <button
+            type="button"
+            className="absolute right-2 top-2 text-xs text-blue-500"
+            onClick={() => setShowPassword(prev => !prev)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
         </div>
-        <div>
+        <div className="relative">
           <input
-            type="password"
+            type={showConfirmPassword ? 'text' : 'password'}
             id="confirmPassword"
             name="confirmPassword"
             placeholder="Confirm Password"
@@ -132,23 +143,35 @@ const SignUp: React.FC = () => {
             required
             className="w-full px-3 py-2 border rounded text-sm"
           />
+          <button
+            type="button"
+            className="absolute right-2 top-2 text-xs text-blue-500"
+            onClick={() => setShowConfirmPassword(prev => !prev)}
+          >
+            {showConfirmPassword ? 'Hide' : 'Show'}
+          </button>
         </div>
+
         {errors.length > 0 && (
-          <div className="text-red-500 text-sm">
+          <div className="text-red-500 text-sm space-y-1">
             {errors.map((error, index) => (
               <p key={index}>{error}</p>
             ))}
           </div>
         )}
+
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 text-sm"
+          className="w-full bg-green-400 text-white py-2 rounded hover:bg-green-600 text-sm"
         >
           Sign Up
         </button>
       </form>
       <p className="mt-4 text-center text-sm">
-        Already have an account? <Link to="../signin" className="text-blue-500 hover:underline">Sign In</Link>
+        Already have an account?{' '}
+        <Link to="../signin" className="text-blue-500 hover:underline">
+          Sign In
+        </Link>
       </p>
     </div>
   );
