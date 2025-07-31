@@ -1,3 +1,4 @@
+
 import { Notification, NotificationResponse, NotificationStatus } from '../types';
 
 // Mock data for notifications
@@ -24,32 +25,31 @@ const mockNotifications: Notification[] = [
   { id: 20, message: 'System maintenance completed', status: 'read' },
 ];
 
-export const fetchNotifications = async (
+export const fetchNotifications = async ({
   page = 1,
   limit = 10,
   searchTerm = '',
-  filter: NotificationStatus | 'all' = 'all'
-): Promise<NotificationResponse> => {
-  // Simulate API delay
+  filter = 'all',
+}: {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  filter?: NotificationStatus | 'all';
+}): Promise<NotificationResponse> => {
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   let filteredNotifications = [...mockNotifications];
 
-  // Apply search filter
   if (searchTerm) {
     filteredNotifications = filteredNotifications.filter(notification =>
       notification.message.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
-  // Apply status filter
   if (filter !== 'all') {
-    filteredNotifications = filteredNotifications.filter(
-      notification => notification.status === filter
-    );
+    filteredNotifications = filteredNotifications.filter(notification => notification.status === filter);
   }
 
-  // Calculate pagination
   const totalItems = filteredNotifications.length;
   const totalPages = Math.ceil(totalItems / limit);
   const startIndex = (page - 1) * limit;
@@ -63,6 +63,8 @@ export const fetchNotifications = async (
     totalItems,
     hasNextPage: page < totalPages,
     hasPreviousPage: page > 1,
-    itemsPerPage: limit
+    itemsPerPage: limit,
+    unreadCount: filteredNotifications.filter(n => n.status === 'unread').length,
+    readCount: filteredNotifications.filter(n => n.status === 'read').length,
   };
 };

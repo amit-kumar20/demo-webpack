@@ -1,5 +1,6 @@
 import React from 'react';
 import { Notification } from '../types';
+import { FiBell } from 'react-icons/fi';
 
 interface NotificationListProps {
   notifications: Notification[];
@@ -8,7 +9,7 @@ interface NotificationListProps {
 const NotificationList: React.FC<NotificationListProps> = ({ notifications }) => {
   if (notifications.length === 0) {
     return (
-      <div className="text-center py-10 text-gray-500">
+      <div className="text-center py-10 text-gray-500 text-sm">
         No notifications found.
       </div>
     );
@@ -19,18 +20,27 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
       {notifications.map((notification) => (
         <li
           key={notification.id}
-          className={`p-4 rounded-lg shadow-sm transition-colors duration-200 ${
+          className={`p-4 rounded-xl border transition-colors duration-200 shadow-sm ${
             notification.status === 'unread'
-              ? 'bg-blue-50 hover:bg-blue-100'
-              : 'bg-white hover:bg-gray-50'
+              ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+              : 'bg-white border-gray-200 hover:bg-gray-50'
           }`}
         >
-          <div className="flex items-center justify-between">
-            <p className={`text-gray-800 ${notification.status === 'unread' ? 'font-semibold' : ''}`}>
-              {notification.message}
-            </p>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+                <FiBell className="text-xl" />
+              </div>
+              <div>
+                <p className={`text-sm leading-snug text-gray-800 ${
+                  notification.status === 'unread' ? 'font-semibold' : ''
+                }`}>
+                  {notification.message}
+                </p>
+              </div>
+            </div>
             <span
-              className={`px-2 py-1 text-xs rounded-full ${
+              className={`px-2 py-1 text-xs rounded-full capitalize ${
                 notification.status === 'unread'
                   ? 'bg-blue-100 text-blue-800'
                   : 'bg-gray-100 text-gray-800'
@@ -39,8 +49,8 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
               {notification.status}
             </span>
           </div>
-          <div className="mt-2 text-sm text-gray-500">
-            {/* You can add more details here, like timestamp */}
+          <div className="mt-2 text-xs text-right text-gray-500">
+            {/* Replace with actual timestamp if available */}
             2 hours ago
           </div>
         </li>
