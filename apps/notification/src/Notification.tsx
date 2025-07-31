@@ -1,79 +1,66 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import SearchBar from './components/SearchBar';
-import FilterButtons from './components/FilterButtons';
-import NotificationList from './components/NotificationList';
-import Pagination from './components/Pagination';
-import { NotificationStatus, NotificationResponse } from './types';
-import { fetchNotifications } from './api/notificationApi';
+// ✅ File: src/Notification.tsx
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import './index.css';
 
-const ITEMS_PER_PAGE = 10;
+import FilterButtons, { FilterType } from "./components/FilterButtons";
+import NotificationList from "./components/NotificationList";
+import Pagination from "./components/Pagination";
+import SearchBar from "./components/SearchBar";
+import { fetchNotifications } from "./api/notificationApi";
+import { NotificationResponse } from "./types";
 
-const Notification = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentFilter, setCurrentFilter] = useState<NotificationStatus | 'all'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
+const Notification: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentFilter, setCurrentFilter] = useState<FilterType>("all");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery<NotificationResponse>(
-    ['notifications', searchTerm, currentFilter, currentPage],
-    () => fetchNotifications(currentPage, ITEMS_PER_PAGE, searchTerm, currentFilter),
-    {
-      keepPreviousData: true,
-    }
-  );
+  const { data, isLoading, error } = useQuery<NotificationResponse>({
+    queryKey: ["notifications", currentPage, currentFilter, searchTerm],
+    queryFn: () =>
+      fetchNotifications({
+        page: currentPage,
+        limit: 10,
+        searchTerm: searchTerm,
+        filter: currentFilter,
+      }),
+    keepPreviousData: true,
+  });
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1);
-    refetch();
-  };
-
-  const handleFilter = (filter: NotificationStatus | 'all') => {
+  const handleFilterChange = (filter: FilterType) => {
     setCurrentFilter(filter);
     setCurrentPage(1);
-    refetch();
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    refetch();
   };
 
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1);
+  };
+
+  if (isLoading) return <div className="text-center py-4">Loading notifications...</div>;
+  if (error) return <div className="text-center py-4 text-red-600">Error fetching notifications.</div>;
+
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Notifications</h2>
-        <div className="mb-6">
-          <SearchBar onSearch={handleSearch} />
-        </div>
-        <div className="mb-6">
-          <FilterButtons onFilter={handleFilter} currentFilter={currentFilter} />
-        </div>
-        {isLoading ? (
-          <div className="text-center py-10">
-            <div className="spinner"></div>
-            <p className="mt-2 text-gray-600">Loading notifications...</p>
-          </div>
-        ) : isError ? (
-          <div className="text-center py-10 text-red-600">
-            Error fetching notifications. Please try again.
-          </div>
-        ) : (
-          <>
-            <NotificationList notifications={data?.data || []} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={data?.totalPages || 1}
-              onPageChange={handlePageChange}
-            />
-          </>
-        )}
+    <div className="p-4 space-y-4">
+      <div className="flex justify-end mb-4">
+        <SearchBar onSearch={handleSearch} />
       </div>
+      <FilterButtons
+        currentFilter={currentFilter}
+        onFilter={handleFilterChange}
+        unreadCount={data?.unreadCount ?? 0}
+        readCount={data?.readCount ?? 0}
+      />
+      <NotificationList notifications={data?.data ?? []} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={data?.totalPages ?? 1}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
