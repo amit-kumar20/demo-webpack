@@ -43,12 +43,12 @@ const FilterButtons: React.FC<FilterButtonsProps> = ({
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex flex-wrap gap-2 sm:gap-3">
       {filters.map((filter) => (
         <button
           key={filter}
           onClick={() => onFilter(filter)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 border shadow-sm
+          className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 border shadow-sm
             ${
               currentFilter === filter
                 ? 'bg-[#4b286d] text-white border-[#4b286d]'
@@ -58,7 +58,7 @@ const FilterButtons: React.FC<FilterButtonsProps> = ({
           {getIcon(filter)}
           <span className="capitalize">{filter}</span>
           <span
-            className={`ml-auto text-xs font-semibold rounded-full px-2 py-0.5
+            className={`ml-auto text-[10px] sm:text-xs font-semibold rounded-full px-1.5 sm:px-2 py-0.5
               ${
                 filter === 'unread'
                   ? 'bg-purple-100 text-[#4b286d]'

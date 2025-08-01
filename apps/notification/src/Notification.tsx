@@ -36,16 +36,16 @@ const NotificationContent: React.FC = () => {
   if (error) return <div className="text-center py-4 text-red-600">{error}</div>;
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex justify-end mb-4">
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-4">
+        <FilterButtons
+          currentFilter={filters.filter}
+          onFilter={handleFilterChange}
+          unreadCount={unreadCount}
+          readCount={readCount}
+        />
         <SearchBar onSearch={handleSearch} />
       </div>
-      <FilterButtons
-        currentFilter={filters.filter}
-        onFilter={handleFilterChange}
-        unreadCount={unreadCount}
-        readCount={readCount}
-      />
       <NotificationList notifications={notifications} />
       <Pagination
         currentPage={filters.page}
@@ -59,7 +59,9 @@ const NotificationContent: React.FC = () => {
 const Notification: React.FC = () => {
   return (
     <Provider store={store}>
-      <NotificationContent />
+      <div className="max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6">
+        <NotificationContent />
+      </div>
     </Provider>
   );
 };
