@@ -1,5 +1,3 @@
-// ✅ File: src/types.ts (or wherever it's located)
-
 export type NotificationStatus = 'read' | 'unread';
 
 export interface Notification {
@@ -18,4 +16,11 @@ export interface NotificationResponse {
   itemsPerPage: number;
   unreadCount: number;
   readCount: number;
+}
+
+export interface NotificationFilters {
+  page: number;
+  limit: number;
+  searchTerm: string;
+  filter: NotificationStatus | 'all';
 }

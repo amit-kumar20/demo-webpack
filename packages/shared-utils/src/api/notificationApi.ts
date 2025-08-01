@@ -1,5 +1,4 @@
-
-import { Notification, NotificationResponse, NotificationStatus } from '../types';
+import { Notification, NotificationResponse, NotificationStatus, NotificationFilters } from '../types';
 
 // Mock data for notifications
 const mockNotifications: Notification[] = [
@@ -30,12 +29,7 @@ export const fetchNotifications = async ({
   limit = 10,
   searchTerm = '',
   filter = 'all',
-}: {
-  page?: number;
-  limit?: number;
-  searchTerm?: string;
-  filter?: NotificationStatus | 'all';
-}): Promise<NotificationResponse> => {
+}: NotificationFilters): Promise<NotificationResponse> => {
   await new Promise(resolve => setTimeout(resolve, 1000));
 
   let filteredNotifications = [...mockNotifications];

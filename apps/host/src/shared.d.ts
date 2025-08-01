@@ -1,24 +1,20 @@
+declare module 'shared/remoteStore' {
+  import { Store } from '@reduxjs/toolkit';
+  export const store: Store;
+}
+
 declare module 'shared/components' {
-  import { Component, ErrorInfo, ReactNode } from 'react';
-  
-  interface ErrorBoundaryProps {
-    children: ReactNode;
-    fallback?: ReactNode | ((error: Error) => ReactNode);
-  }
-  
-  export class ErrorBoundary extends Component<ErrorBoundaryProps> {}
+  export * from 'shared/src/components';
 }
 
 declare module 'shared/hooks' {
-  export function useForm<T extends Record<string, any>>(initialValues: T): {
-    values: T;
-    errors: Partial<Record<keyof T, string>>;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    setErrors: React.Dispatch<React.SetStateAction<Partial<Record<keyof T, string>>>>;
-  };
+  export * from 'shared/src/hooks';
 }
 
 declare module 'shared/utils' {
-  export function isValidEmail(email: string): boolean;
-  export function isValidPassword(password: string): boolean;
+  export * from 'shared/src/utils';
+}
+
+declare module 'shared/ToastProvider' {
+  export * from 'shared/src/components/ToastProvider';
 }

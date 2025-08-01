@@ -1,11 +1,12 @@
 {
   "presets": [
-    "@babel/preset-react",
-    "@babel/preset-typescript",
     ["@babel/preset-env", {
-      "targets": {
-        "browsers": ["last 2 versions"]
-      }
+      "targets": { "browsers": ["last 2 versions"] }
+    }],
+    ["@babel/preset-react", { "runtime": "automatic" }],
+    ["@babel/preset-typescript", {
+      "isTSX": true,
+      "allExtensions": true
     }]
   ]
 }

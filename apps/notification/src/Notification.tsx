@@ -1,80 +1,68 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import SearchBar from './components/SearchBar';
-import FilterButtons from './components/FilterButtons';
-import NotificationList from './components/NotificationList';
-import Pagination from './components/Pagination';
-import { NotificationStatus, NotificationResponse } from './types';
-import { fetchNotifications } from './api/notificationApi';
+import React, { useEffect } from "react";
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { store, RootState, AppDispatch } from '@shared-utils/store';
+import { fetchNotificationsAsync, setFilter, setPage, setSearchTerm } from '@shared-utils/store/notificationSlice';
+import './index.css';
 
-const ITEMS_PER_PAGE = 10;
+import FilterButtons, { FilterType } from "./components/FilterButtons";
+import NotificationList from "./components/NotificationList";
+import Pagination from "./components/Pagination";
+import SearchBar from "./components/SearchBar";
 
-const Notification = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentFilter, setCurrentFilter] = useState<NotificationStatus | 'all'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery<NotificationResponse>(
-    ['notifications', searchTerm, currentFilter, currentPage],
-    () => fetchNotifications(currentPage, ITEMS_PER_PAGE, searchTerm, currentFilter),
-    {
-      keepPreviousData: true,
-    }
+const NotificationContent: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { notifications, loading, error, filters, totalPages, unreadCount, readCount } = useSelector(
+    (state: RootState) => state.notification
   );
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1);
-    refetch();
-  };
+  // Fetch notifications on mount and when filters change
+  useEffect(() => {
+    dispatch(fetchNotificationsAsync());
+  }, [dispatch, filters]);
 
-  const handleFilter = (filter: NotificationStatus | 'all') => {
-    setCurrentFilter(filter);
-    setCurrentPage(1);
-    refetch();
+  const handleFilterChange = (filter: FilterType) => {
+    dispatch(setFilter(filter));
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    refetch();
+    dispatch(setPage(page));
   };
 
+  const handleSearch = (term: string) => {
+    dispatch(setSearchTerm(term));
+  };
+
+  if (loading) return <div className="text-center py-4">Loading notifications...</div>;
+  if (error) return <div className="text-center py-4 text-red-600">{error}</div>;
+
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Notifications</h2>
-        <div className="mb-6">
-          <SearchBar onSearch={handleSearch} />
-        </div>
-        <div className="mb-6">
-          <FilterButtons onFilter={handleFilter} currentFilter={currentFilter} />
-        </div>
-        {isLoading ? (
-          <div className="text-center py-10">
-            <div className="spinner"></div>
-            <p className="mt-2 text-gray-600">Loading notifications...</p>
-          </div>
-        ) : isError ? (
-          <div className="text-center py-10 text-red-600">
-            Error fetching notifications. Please try again.
-          </div>
-        ) : (
-          <>
-            <NotificationList notifications={data?.data || []} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={data?.totalPages || 1}
-              onPageChange={handlePageChange}
-            />
-          </>
-        )}
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-4">
+        <FilterButtons
+          currentFilter={filters.filter}
+          onFilter={handleFilterChange}
+          unreadCount={unreadCount}
+          readCount={readCount}
+        />
+        <SearchBar onSearch={handleSearch} />
       </div>
+      <NotificationList notifications={notifications} />
+      <Pagination
+        currentPage={filters.page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
+  );
+};
+
+const Notification: React.FC = () => {
+  return (
+    <Provider store={store}>
+      <div className="max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6">
+        <NotificationContent />
+      </div>
+    </Provider>
   );
 };
 
