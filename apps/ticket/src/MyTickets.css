@@ -48,9 +48,9 @@ h2 {
   margin-top: 0.3rem;
 }
 
-.stat-card.open { border-left: 5px solid #34d399; }
-.stat-card.closed { border-left: 5px solid #f87171; }
-.stat-card.pending { border-left: 5px solid #fbbf24; }
+.stat-card.open { border-left: 5px solid #4b286d; }
+.stat-card.closed { border-left: 5px solid #4b286d; }
+.stat-card.pending { border-left: 5px solid #4b286d; }
 
 .export-btn {
   margin-left: auto;

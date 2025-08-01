@@ -5,16 +5,35 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
+
+  stats: {
+    all: false,
+    errors: true,
+    warnings: true,
+    logging: "warn",
+    colors: true,
+    timings: true,
+  },
+
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),
     },
     port: 5177,
     historyApiFallback: true,
+    client: {
+      logging: "warn",
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
   },
+
   output: {
     publicPath: "http://localhost:5177/",
   },
+
   module: {
     rules: [
       {
@@ -41,12 +60,14 @@ module.exports = {
       },
     ],
   },
+
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
       '@shared-utils': path.resolve(__dirname, '../../packages/shared-utils/src'),
     },
   },
+
   plugins: [
     new ModuleFederationPlugin({
       name: "shared",
@@ -56,7 +77,7 @@ module.exports = {
         "./hooks": "./src/hooks/index.ts",
         "./utils": "./src/utils/index.ts",
         "./ToastProvider": "./src/components/ToastProvider/index.tsx",
-        "./remoteStore": "./src/store/index.ts",
+        "./remoteStore": "./src/store/index.ts", 
       },
       shared: {
         react: {
@@ -81,6 +102,7 @@ module.exports = {
         },
       },
     }),
+
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),

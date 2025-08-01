@@ -16,3 +16,7 @@ declare module 'notification/Notification' {
   const Notification: React.ComponentType;
   export default Notification;
 }
+declare module 'ticket/store' {
+  const store: any; 
+  export default store;
+}
