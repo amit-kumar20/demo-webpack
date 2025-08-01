@@ -61,6 +61,7 @@ module.exports = {
       exposes: {
         "./Ticket": "./src/Ticket",
         "./MyTickets": "./src/MyTickets",
+        "./store": "./src/store/store",
       },
       shared: {
         react: {

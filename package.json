@@ -55,3 +55,60 @@
   "license": "ISC",
   "description": ""
 }
+{
+  "name": "microfrontend-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "node apps/host/dist/server.js",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "kill": "taskkill /F /IM node.exe",
+    "start:all": "concurrently \"npm run start:host\" \"npm run start:auth\" \"npm run start:ticket\" \"npm run start:notification\" \"npm run start:shared\"",
+    "start:host": "cd apps/host && npm start",
+    "start:auth": "cd apps/auth && npm start",
+    "start:ticket": "cd apps/ticket && npm start",
+    "start:notification": "cd apps/notification && npm start",
+    "start:shared": "cd apps/shared && npm start"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.1",
+    "concurrently": "^9.2.0",
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.3.2",
+    "turbo": "^1.10.0",
+    "typescript": "^4.9.5",
+    "webpack": "^5.80.0",
+    "webpack-cli": "^5.0.2",
+    "webpack-dev-server": "^4.13.3"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
+    "@remix-run/router": "^1.15.0",
+    "axios": "^1.4.0",
+    "framer-motion": "^12.23.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
+    "react-router": "^6.20.0",
+    "react-router-dom": "^6.20.0",
+    "recharts": "^3.1.0"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
