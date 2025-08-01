@@ -12,9 +12,6 @@ interface NotificationListProps {
 const NotificationList: React.FC<NotificationListProps> = ({ notifications }) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleMarkAsRead = (id: number) => {
-    dispatch(markAsReadAsync(id));
-  };
   if (notifications.length === 0) {
     return (
       <div className="text-center py-10 text-gray-500 text-sm">
@@ -47,24 +44,22 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                 </p>
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <span
-                className={`px-2 py-1 text-xs rounded-full capitalize ${
+            <div className="flex items-center">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (notification.status === 'unread') {
+                    dispatch(markAsReadAsync(notification.id));
+                  }
+                }}
+                className={`px-2 py-1 text-xs rounded-full capitalize transition-all duration-200 ${
                   notification.status === 'unread'
-                    ? 'bg-blue-100 text-blue-800'
+                    ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer'
                     : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {notification.status}
-              </span>
-              {notification.status === 'unread' && (
-                <button
-                  onClick={() => handleMarkAsRead(notification.id)}
-                  className="mt-2 text-xs text-blue-600 hover:text-blue-800"
-                >
-                  Mark as read
-                </button>
-              )}
+                <span>{notification.status}</span>
+              </button>
             </div>
           </div>
           <div className="mt-2 text-xs text-right text-gray-500">
