@@ -88,6 +88,16 @@ module.exports = {
           requiredVersion: "^6.11.0",
           eager: true,
         },
+        "react-redux": {
+          singleton: true,
+          requiredVersion: "^9.2.0",
+          eager: true,
+        },
+        "@reduxjs/toolkit": {
+          singleton: true,
+          requiredVersion: "^2.2.0",
+          eager: true
+        },
         "@tanstack/react-query": {
           singleton: true,
           requiredVersion: "^4.29.5",

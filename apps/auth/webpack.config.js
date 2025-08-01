@@ -39,8 +39,20 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "babel-loader",
-        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, "../../packages/shared-utils/src")
+        ],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              ["@babel/preset-typescript", { "isTSX": true, "allExtensions": true }]
+            ]
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -54,6 +66,7 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
       shared: path.resolve(__dirname, "../shared/src"),
+      '@shared-utils': path.resolve(__dirname, "../../packages/shared-utils/src"),
     },
   },
 
@@ -81,6 +94,16 @@ module.exports = {
         "react-router-dom": {
           singleton: true,
           requiredVersion: "^6.11.0",
+          eager: true,
+        },
+        "@reduxjs/toolkit": {
+          singleton: true,
+          requiredVersion: "^2.2.0",
+          eager: true,
+        },
+        "react-redux": {
+          singleton: true,
+          requiredVersion: "^9.2.0",
           eager: true,
         },
       },

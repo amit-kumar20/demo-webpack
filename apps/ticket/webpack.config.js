@@ -32,7 +32,7 @@ module.exports = {
 
   output: {
     publicPath: "auto",
-    clean: true, 
+    clean: true,
   },
 
   module: {
@@ -76,6 +76,11 @@ module.exports = {
         "react-router-dom": {
           singleton: true,
           requiredVersion: "^6.11.0",
+          eager: true,
+        },
+        "@reduxjs/toolkit": {
+          singleton: true,
+          requiredVersion: "^2.2.0",
           eager: true,
         },
       },

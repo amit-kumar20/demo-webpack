@@ -1,67 +1,68 @@
-// ✅ File: src/Notification.tsx
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect } from "react";
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { store, RootState, AppDispatch } from '@shared-utils/store';
+import { fetchNotificationsAsync, setFilter, setPage, setSearchTerm } from '@shared-utils/store/notificationSlice';
 import './index.css';
 
 import FilterButtons, { FilterType } from "./components/FilterButtons";
 import NotificationList from "./components/NotificationList";
 import Pagination from "./components/Pagination";
 import SearchBar from "./components/SearchBar";
-import { fetchNotifications } from "./api/notificationApi";
-import { NotificationResponse } from "./types";
 
-const Notification: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [currentFilter, setCurrentFilter] = useState<FilterType>("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+const NotificationContent: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { notifications, loading, error, filters, totalPages, unreadCount, readCount } = useSelector(
+    (state: RootState) => state.notification
+  );
 
-  const { data, isLoading, error } = useQuery<NotificationResponse>({
-    queryKey: ["notifications", currentPage, currentFilter, searchTerm],
-    queryFn: () =>
-      fetchNotifications({
-        page: currentPage,
-        limit: 10,
-        searchTerm: searchTerm,
-        filter: currentFilter,
-      }),
-    keepPreviousData: true,
-  });
+  // Fetch notifications on mount and when filters change
+  useEffect(() => {
+    dispatch(fetchNotificationsAsync());
+  }, [dispatch, filters]);
 
   const handleFilterChange = (filter: FilterType) => {
-    setCurrentFilter(filter);
-    setCurrentPage(1);
+    dispatch(setFilter(filter));
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    dispatch(setPage(page));
   };
 
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1);
+    dispatch(setSearchTerm(term));
   };
 
-  if (isLoading) return <div className="text-center py-4">Loading notifications...</div>;
-  if (error) return <div className="text-center py-4 text-red-600">Error fetching notifications.</div>;
+  if (loading) return <div className="text-center py-4">Loading notifications...</div>;
+  if (error) return <div className="text-center py-4 text-red-600">{error}</div>;
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="flex justify-end mb-4">
+    <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-4">
+        <FilterButtons
+          currentFilter={filters.filter}
+          onFilter={handleFilterChange}
+          unreadCount={unreadCount}
+          readCount={readCount}
+        />
         <SearchBar onSearch={handleSearch} />
       </div>
-      <FilterButtons
-        currentFilter={currentFilter}
-        onFilter={handleFilterChange}
-        unreadCount={data?.unreadCount ?? 0}
-        readCount={data?.readCount ?? 0}
-      />
-      <NotificationList notifications={data?.data ?? []} />
+      <NotificationList notifications={notifications} />
       <Pagination
-        currentPage={currentPage}
-        totalPages={data?.totalPages ?? 1}
+        currentPage={filters.page}
+        totalPages={totalPages}
         onPageChange={handlePageChange}
       />
     </div>
+  );
+};
+
+const Notification: React.FC = () => {
+  return (
+    <Provider store={store}>
+      <div className="max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6">
+        <NotificationContent />
+      </div>
+    </Provider>
   );
 };
 

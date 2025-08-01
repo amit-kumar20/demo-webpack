@@ -37,12 +37,16 @@
     "webpack-dev-server": "^4.13.3"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
+    "@remix-run/router": "^1.15.0",
     "axios": "^1.4.0",
     "framer-motion": "^12.23.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^7.7.1",
+    "react-redux": "^9.2.0",
+    "react-router": "^6.20.0",
+    "react-router-dom": "^6.20.0",
     "recharts": "^3.1.0"
   },
   "main": "index.js",
