@@ -1,5 +1,8 @@
 import React from 'react';
-import { Notification } from '../types';
+import { useDispatch } from 'react-redux';
+import { Notification } from '@shared-utils/types';
+import { markAsReadAsync } from '@shared-utils/store/notificationSlice';
+import { AppDispatch } from '@shared-utils/store';
 import { FiBell } from 'react-icons/fi';
 
 interface NotificationListProps {
@@ -7,6 +10,11 @@ interface NotificationListProps {
 }
 
 const NotificationList: React.FC<NotificationListProps> = ({ notifications }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleMarkAsRead = (id: number) => {
+    dispatch(markAsReadAsync(id));
+  };
   if (notifications.length === 0) {
     return (
       <div className="text-center py-10 text-gray-500 text-sm">
@@ -39,15 +47,25 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                 </p>
               </div>
             </div>
-            <span
-              className={`px-2 py-1 text-xs rounded-full capitalize ${
-                notification.status === 'unread'
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-gray-100 text-gray-800'
-              }`}
-            >
-              {notification.status}
-            </span>
+            <div className="flex flex-col items-end">
+              <span
+                className={`px-2 py-1 text-xs rounded-full capitalize ${
+                  notification.status === 'unread'
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}
+              >
+                {notification.status}
+              </span>
+              {notification.status === 'unread' && (
+                <button
+                  onClick={() => handleMarkAsRead(notification.id)}
+                  className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                >
+                  Mark as read
+                </button>
+              )}
+            </div>
           </div>
           <div className="mt-2 text-xs text-right text-gray-500">
             {/* Replace with actual timestamp if available */}

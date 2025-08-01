@@ -37,8 +37,20 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "babel-loader",
-        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, "../../packages/shared-utils/src")
+        ],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              ["@babel/preset-typescript", { "isTSX": true, "allExtensions": true }]
+            ]
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -50,6 +62,9 @@ module.exports = {
 
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    alias: {
+      '@shared-utils': path.resolve(__dirname, "../../packages/shared-utils/src"),
+    },
   },
 
   plugins: [
@@ -78,6 +93,11 @@ module.exports = {
         "@reduxjs/toolkit": {
           singleton: true,
           requiredVersion: "^2.2.0",
+          eager: true
+        },
+        "react-redux": {
+          singleton: true,
+          requiredVersion: "^9.2.0",
           eager: true
         },
         "@tanstack/react-query": {
