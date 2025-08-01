@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import useCustomToast from '../hooks/useCustomToast';
-import { setUser } from '@shared-utils/store/authSlice';
 import { isValidEmail, isValidPassword } from 'shared/utils';
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -16,7 +14,6 @@ interface FormData {
 const SignUp: React.FC = () => {
   const { showSuccessToast, showErrorToast } = useCustomToast();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -80,21 +77,9 @@ const SignUp: React.FC = () => {
 
       localStorage.setItem(formData.email, JSON.stringify(userData));
 
-      // Update Redux store with user data (excluding password)
-      dispatch(setUser({
-        email: formData.email,
-        username: formData.username
-      }));
-
-      // Store current user (excluding password)
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: formData.email,
-        username: formData.username
-      }));
-
-      showSuccessToast('Account created successfully! Redirecting...');
+      showSuccessToast('Account created successfully! Please sign in.');
       await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/');
+      navigate('../signin', { replace: true });
 
       setFormData({
         email: '',
