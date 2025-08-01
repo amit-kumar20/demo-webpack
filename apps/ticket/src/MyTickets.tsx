@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './store/store'; 
+import { setTickets, deleteTicket } from './store/ticketSlice';
 import './MyTickets.css';
 
 type Ticket = {
@@ -18,7 +21,9 @@ const useQuery = () => {
 const TICKETS_PER_PAGE = 5;
 
 const MyTickets = () => {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const dispatch = useDispatch();
+  const tickets = useSelector((state: RootState) => state.tickets.tickets);
+
   const [filter, setFilter] = useState({ category: '', status: '', program: '' });
   const [modalTicket, setModalTicket] = useState<Ticket | null>(null);
   const [page, setPage] = useState(1);
@@ -29,8 +34,8 @@ const MyTickets = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem('myTickets');
-    if (stored) setTickets(JSON.parse(stored));
-  }, []);
+    if (stored) dispatch(setTickets(JSON.parse(stored)));
+  }, [dispatch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter({ ...filter, [e.target.name]: e.target.value });
@@ -38,9 +43,9 @@ const MyTickets = () => {
   };
 
   const handleDelete = (id: number) => {
-    const updatedTickets = tickets.filter(ticket => ticket.id !== id);
-    setTickets(updatedTickets);
-    localStorage.setItem('myTickets', JSON.stringify(updatedTickets));
+    dispatch(deleteTicket(id));
+    const updated = tickets.filter(ticket => ticket.id !== id);
+    localStorage.setItem('myTickets', JSON.stringify(updated));
   };
 
   const exportToCSV = () => {
@@ -163,7 +168,9 @@ const MyTickets = () => {
                 <td>{ticket.program}</td>
                 <td>{ticket.createdAt}</td>
                 <td>
-                  <button className="delete-btn" onClick={(e) => { e.stopPropagation(); handleDelete(ticket.id); }}>Delete</button>
+                  <button className="delete-btn" onClick={(e) => { e.stopPropagation(); handleDelete(ticket.id); }}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))

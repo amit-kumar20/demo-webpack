@@ -5,16 +5,35 @@ const path = require("path");
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
+
+  stats: {
+    all: false,
+    errors: true,
+    warnings: true,
+    logging: "warn",
+    colors: true,
+    timings: true,
+  },
+
   devServer: {
     static: {
       directory: path.join(__dirname, "dist"),
     },
     port: 5177,
     historyApiFallback: true,
+    client: {
+      logging: "warn",
+      overlay: {
+        warnings: false,
+        errors: true,
+      },
+    },
   },
+
   output: {
     publicPath: "http://localhost:5177/",
   },
+
   module: {
     rules: [
       {
@@ -29,9 +48,11 @@ module.exports = {
       },
     ],
   },
+
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
+
   plugins: [
     new ModuleFederationPlugin({
       name: "shared",
@@ -40,21 +61,22 @@ module.exports = {
         "./components": "./src/components/index.ts",
         "./hooks": "./src/hooks/index.ts",
         "./utils": "./src/utils/index.ts",
-        "./ToastProvider": "./src/components/ToastProvider/index.tsx"
+        "./ToastProvider": "./src/components/ToastProvider/index.tsx",
       },
       shared: {
-        react: { 
-          singleton: true, 
+        react: {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
-        "react-dom": { 
-          singleton: true, 
+        "react-dom": {
+          singleton: true,
           requiredVersion: "^18.2.0",
-          eager: true
+          eager: true,
         },
       },
     }),
+
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
