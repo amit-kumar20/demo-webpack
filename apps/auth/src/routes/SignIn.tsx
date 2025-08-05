@@ -49,7 +49,6 @@ const SignIn = () => {
         throw new Error(response.message || 'Login failed');
       }
     } catch (err: any) {
-      console.error('Sign in failed:', err);
       const errorMessage = err.response?.data?.message || 'Invalid email or password';
       setError(errorMessage);
       showErrorToast(errorMessage);

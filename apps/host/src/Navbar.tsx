@@ -15,10 +15,6 @@ const Navbar = () => {
   const dispatch = useDispatch();
 const user = useSelector((state: RootState) => state.auth.user);
 
-useEffect(() => {
-  console.log('Current user state in Navbar:', user);
-}, [user]);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -51,7 +47,6 @@ useEffect(() => {
       // Redirect to login
       navigate('/auth');
     } catch (error) {
-      console.error('Logout failed:', error);
       showErrorToast('Logout failed. Please try again.');
       // Still clear local state even if API call fails
       dispatch(setUser(null));

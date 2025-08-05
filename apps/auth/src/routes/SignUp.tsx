@@ -10,7 +10,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   full_name: string;
-  role: 'manager' | 'agent';
+  // role: 'manager' | 'agent'; // Commented out as role is now defined on the backend
 }
 
 const SignUp: React.FC = () => {
@@ -22,7 +22,7 @@ const SignUp: React.FC = () => {
     password: '',
     confirmPassword: '',
     full_name: '',
-    role: 'agent'
+    // role: 'agent' // Commented out as role is now defined on the backend
   });
 
   const [errors, setErrors] = useState<string[]>([]);
@@ -74,7 +74,7 @@ const SignUp: React.FC = () => {
         email: formData.email,
         password: formData.password,
         full_name: formData.full_name,
-        role: formData.role
+        // role: formData.role // Commented out as role is now defined on the backend
       });
 
       if (response.success) {
@@ -85,7 +85,6 @@ const SignUp: React.FC = () => {
       }
     } catch (error: unknown) {
       showErrorToast('Failed to create account. Please try again.');
-      console.error('Sign up error:', error);
     }
   };
 
@@ -105,6 +104,7 @@ const SignUp: React.FC = () => {
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
+        {/* Role selection commented out as it's now defined on the backend
         <div>
           <select
             id="role"
@@ -118,6 +118,7 @@ const SignUp: React.FC = () => {
             <option value="manager">Manager</option>
           </select>
         </div>
+        */}
         <div>
           <input
             type="email"

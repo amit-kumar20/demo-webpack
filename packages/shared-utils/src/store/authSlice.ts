@@ -25,11 +25,9 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<User | null>) => {
-      console.log('setUser action payload:', action.payload);
       state.user = action.payload;
       state.isVerified = action.payload !== null;
       state.error = null;
-      console.log('Updated auth state:', state);
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;

@@ -6,16 +6,10 @@ import './index.css';
 
 async function bootstrap() {
   const { store } = await import('@shared-utils');
-  console.log('Redux store:', store.getState());
-  
   const container = document.getElementById('root');
   if (!container) throw new Error('Root element not found');
 
   const root = createRoot(container);
-
-  store.subscribe(() => {
-    console.log('Redux state updated:', store.getState());
-  });
 
   root.render(
     <React.StrictMode>

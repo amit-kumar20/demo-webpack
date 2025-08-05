@@ -46,14 +46,10 @@ const authApi = {
   },
 
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    console.log('Login request:', credentials);
     const response = await axiosInstance.post('/user/login', credentials);
-    console.log('Login response:', response.data);
-    
     if (response.data.success && response.data.token) {
       authApi.setAuthToken(response.data.token);
     }
-    
     return response.data;
   },
 
@@ -65,14 +61,11 @@ const authApi = {
   },
 
   signup: async (data: SignupData): Promise<AuthResponse> => {
-    console.log('Signup request:', data);
     const response = await axiosInstance.post('/user/signup', data);
-    console.log('Signup response:', response.data);
     return response.data;
   },
 
   verifyToken: async (): Promise<AuthResponse> => {
-    console.log('Verify token request');
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
@@ -81,24 +74,19 @@ const authApi = {
       const response = await axiosInstance.get('/user/verify', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      console.log('Verify token response:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('Verify token error:', error.response?.data || error.message);
       authApi.setAuthToken(null);
       throw error;
     }
   },
 
   logout: async (): Promise<void> => {
-    console.log('Logout request');
     try {
       await axiosInstance.get('/user/logout');
-      console.log('Logout successful');
       // Clear auth token and headers
       authApi.setAuthToken(null);
     } catch (error: any) {
-      console.error('Logout error:', error.response?.data || error.message);
       // Still clear local auth state even if API call fails
       authApi.setAuthToken(null);
       throw error;
