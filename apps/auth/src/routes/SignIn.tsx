@@ -6,7 +6,6 @@ import { Eye, EyeOff } from 'lucide-react';
 import { isValidEmail, isValidPassword } from 'shared/utils';
 import { setUser } from '@shared-utils/store/authSlice';
 import authApi from '@shared-utils/api/authApi';
-import { setLoggedIn } from '@shared-utils/utils/auth';
 
 const SignIn = () => {
   const [email, setEmail] = React.useState('');
@@ -37,28 +36,24 @@ const SignIn = () => {
       const response = await authApi.login({ email, password });
       
       if (response.success && response.data) {
-        console.log('Login response:', response);
-        // Extract only the required user fields
-        const userData = {
-          email: response.data.email,
-          full_name: response.data.full_name,
-          role: response.data.role
-        };
-        // Update Redux store
-        dispatch(setUser(userData));
-        console.log('Dispatched user to Redux store:', userData);
+        // Set the token if it exists
+        if (response.token) {
+          authApi.setAuthToken(response.token);
+        }
         
-        // Set login flag before navigation
-        setLoggedIn();
+        // Update Redux store with user data from login response
+        dispatch(setUser(response.data));
         showSuccessToast('Sign in successful! Redirecting...');
         navigate('/');
       } else {
         throw new Error(response.message || 'Login failed');
       }
-    } catch (err) {
-      setError('Invalid email or password');
-      showErrorToast('Invalid email or password');
-      console.error('Sign in failed', err);
+    } catch (err: any) {
+      console.error('Sign in failed:', err);
+      const errorMessage = err.response?.data?.message || 'Invalid email or password';
+      setError(errorMessage);
+      showErrorToast(errorMessage);
+      dispatch(setUser(null));
     }
   };
 

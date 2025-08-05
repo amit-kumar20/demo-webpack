@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 const API_BASE_URL = 'http://localhost:5001';
 
 // Create a custom axios instance
@@ -24,6 +23,7 @@ export interface SignupData extends LoginCredentials {
 export interface AuthResponse {
   success: boolean;
   message: string;
+  token?: string;
   data?: {
     email: string;
     full_name: string;
@@ -31,18 +31,37 @@ export interface AuthResponse {
   };
 }
 
+let authToken: string | null = null;
+
 const authApi = {
+  setAuthToken: (token: string | null) => {
+    authToken = token;
+    if (token) {
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem('authToken', token);
+    } else {
+      delete axiosInstance.defaults.headers.common['Authorization'];
+      localStorage.removeItem('authToken');
+    }
+  },
+
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     console.log('Login request:', credentials);
     const response = await axiosInstance.post('/user/login', credentials);
     console.log('Login response:', response.data);
-    // Transform response to match our interface
-    const authResponse: AuthResponse = {
-      success: response.data.success,
-      message: response.data.message,
-      data: response.data.data
-    };
-    return authResponse;
+    
+    if (response.data.success && response.data.token) {
+      authApi.setAuthToken(response.data.token);
+    }
+    
+    return response.data;
+  },
+
+  initializeAuth: () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      authApi.setAuthToken(token);
+    }
   },
 
   signup: async (data: SignupData): Promise<AuthResponse> => {
@@ -55,19 +74,35 @@ const authApi = {
   verifyToken: async (): Promise<AuthResponse> => {
     console.log('Verify token request');
     try {
-      const response = await axiosInstance.get('/user/verify');
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No auth token available');
+      }
+      const response = await axiosInstance.get('/user/verify', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       console.log('Verify token response:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('Verify token error:', error.response?.data || error.message);
+      authApi.setAuthToken(null);
       throw error;
     }
   },
 
   logout: async (): Promise<void> => {
     console.log('Logout request');
-    await axiosInstance.post('/user/logout', {});
-    console.log('Logout successful');
+    try {
+      await axiosInstance.get('/user/logout');
+      console.log('Logout successful');
+      // Clear auth token and headers
+      authApi.setAuthToken(null);
+    } catch (error: any) {
+      console.error('Logout error:', error.response?.data || error.message);
+      // Still clear local auth state even if API call fails
+      authApi.setAuthToken(null);
+      throw error;
+    }
   }
 };
 

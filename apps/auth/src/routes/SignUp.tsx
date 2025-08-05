@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import useCustomToast from '../hooks/useCustomToast';
 import { isValidEmail, isValidPassword } from 'shared/utils';
 import { Eye, EyeOff } from 'lucide-react';
+import authApi from '@shared-utils/api/authApi';
 
 interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  username: string;
+  full_name: string;
+  role: 'manager' | 'agent';
 }
 
 const SignUp: React.FC = () => {
@@ -19,7 +21,8 @@ const SignUp: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    username: ''
+    full_name: '',
+    role: 'agent'
   });
 
   const [errors, setErrors] = useState<string[]>([]);
@@ -53,8 +56,8 @@ const SignUp: React.FC = () => {
       newErrors.push('Passwords do not match');
     }
 
-    if (!formData.username) {
-      newErrors.push('Username is required');
+    if (!formData.full_name) {
+      newErrors.push('Full name is required');
     }
 
     setErrors(newErrors);
@@ -67,26 +70,19 @@ const SignUp: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const userData = {
+      const response = await authApi.signup({
         email: formData.email,
-        username: formData.username,
-        password: formData.password // Note: In a real app, never store plain text passwords
-      };
-
-      localStorage.setItem(formData.email, JSON.stringify(userData));
-
-      showSuccessToast('Account created successfully! Please sign in.');
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('../signin', { replace: true });
-
-      setFormData({
-        email: '',
-        password: '',
-        confirmPassword: '',
-        username: ''
+        password: formData.password,
+        full_name: formData.full_name,
+        role: formData.role
       });
+
+      if (response.success) {
+        showSuccessToast('Account created successfully! Please sign in.');
+        navigate('../signin', { replace: true });
+      } else {
+        throw new Error(response.message || 'Failed to create account');
+      }
     } catch (error: unknown) {
       showErrorToast('Failed to create account. Please try again.');
       console.error('Sign up error:', error);
@@ -100,14 +96,27 @@ const SignUp: React.FC = () => {
         <div>
           <input
             type="text"
-            id="username"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
+            id="full_name"
+            name="full_name"
+            placeholder="Full Name"
+            value={formData.full_name}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border rounded text-sm"
           />
+        </div>
+        <div>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border rounded text-sm"
+          >
+            <option value="agent">Agent</option>
+            <option value="manager">Manager</option>
+          </select>
         </div>
         <div>
           <input

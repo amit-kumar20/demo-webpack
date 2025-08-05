@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, setUser } from '@shared-utils/store/authSlice';
 import authApi from '@shared-utils/api/authApi';
-import { clearLoggedIn } from '@shared-utils/utils/auth';
 import useCustomToast from '@shared-utils/hooks/useCustomToast';
+import { RootState } from '@shared-utils/store';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -13,10 +13,10 @@ const Navbar = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-const user = useSelector((state: any) => state.auth.user);
+const user = useSelector((state: RootState) => state.auth.user);
 
 useEffect(() => {
-  console.log('Current user state:', user);
+  console.log('Current user state in Navbar:', user);
 }, [user]);
 
   useEffect(() => {
@@ -46,8 +46,6 @@ useEffect(() => {
       await authApi.logout();
       // Clear Redux state
       dispatch(setUser(null));
-      // Clear login flag
-      clearLoggedIn();
       // Show success message
       showSuccessToast('Logged out successfully');
       // Redirect to login
@@ -57,7 +55,6 @@ useEffect(() => {
       showErrorToast('Logout failed. Please try again.');
       // Still clear local state even if API call fails
       dispatch(setUser(null));
-      clearLoggedIn();
     }
   };
 
@@ -70,7 +67,6 @@ useEffect(() => {
       </div>
       <ul className="nav-list">
         <li><Link to="/">Home</Link></li>
-        <li><Link to="/auth">Auth</Link></li>
         <li><Link to="/ticket">Submit Ticket</Link></li>
         <li><Link to="/ticket/mine">My Tickets</Link></li>
         <li><Link to="/notification">Notification</Link></li>
@@ -93,23 +89,35 @@ useEffect(() => {
       </div>
       <div className="user-profile">
         {user ? (
-          <>
-            <div className="user-icon" onClick={() => setShowDropdown(!showDropdown)}>
-              {user.full_name.charAt(0).toUpperCase()}
+          <div className="user-menu">
+            <div 
+              className="user-icon" 
+              onClick={() => setShowDropdown(!showDropdown)}
+              title={user.full_name}
+            >
+              {user.full_name.split(' ').map((name: string) => name[0]).join('').toUpperCase()}
             </div>
             {showDropdown && (
               <div className="dropdown show" ref={dropdownRef}>
                 <div className="dropdown-header">
                   <strong>{user.full_name}</strong>
                   <small>{user.email}</small>
+                  <small>Role: {user.role}</small>
                 </div>
                 <div className="dropdown-divider"></div>
-                <Link to="/profile" className="dropdown-item">Profile Settings</Link>
+                <Link to="/profile" className="dropdown-item">
+                  <i className="fas fa-user"></i> Profile Settings
+                </Link>
+                <Link to="/notification" className="dropdown-item">
+                  <i className="fas fa-bell"></i> Notifications
+                </Link>
                 <div className="dropdown-divider"></div>
-                <a onClick={handleLogout} className="dropdown-item">Logout</a>
+                <a onClick={handleLogout} className="dropdown-item">
+                  <i className="fas fa-sign-out-alt"></i> Sign Out
+                </a>
               </div>
             )}
-          </>
+          </div>
         ) : (
           <Link to="/auth" className="nav-link">Sign In</Link>
         )}

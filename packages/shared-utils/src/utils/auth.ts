@@ -1,7 +1,7 @@
-export const AUTH_FLAGS = {
-  IS_LOGGED_IN: 'isLoggedIn'
-};
-
-export const setLoggedIn = () => localStorage.setItem(AUTH_FLAGS.IS_LOGGED_IN, 'true');
-export const clearLoggedIn = () => localStorage.removeItem(AUTH_FLAGS.IS_LOGGED_IN);
-export const shouldVerifyToken = () => localStorage.getItem(AUTH_FLAGS.IS_LOGGED_IN) === 'true';
+// Keeping empty exports to maintain module compatibility
+// These functions are no longer used as we've switched to cookie-based auth
+export const setLoggedIn = () => {};
+export const clearLoggedIn = () => {};
+export const shouldVerifyToken = () => false;
+export const setAuthToken = (_token: string) => {};
+export const getAuthToken = () => null;
