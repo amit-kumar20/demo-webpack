@@ -7,7 +7,8 @@ export const ToastWrapper: FC<PropsWithChildren> = ({ children }) => {
     const loadToastProvider = async () => {
       try {
         // @ts-ignore
-        const module = await import('shared/ToastProvider');
+        const module = await import('shared/components');
+        console.log('Loaded module:', module);
         setToastProvider(() => module.ToastProvider);
       } catch (error) {
         console.error('Failed to load ToastProvider:', error);

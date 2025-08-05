@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
+import { useToast } from 'shared/components';
 
 
 type HomeCard = {
@@ -46,6 +47,17 @@ const homeCards: HomeCard[] = [
 
 const Home = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  console.log('Toast hook:', toast);
+
+  const handleTestToast = () => {
+    console.log('Attempting to show toast');
+    if (toast && toast.showSuccessToast) {
+      toast.showSuccessToast("Test toast message!");
+    } else {
+      console.error('Toast function not available');
+    }
+  };
 
   return (
     <motion.div
@@ -55,6 +67,20 @@ const Home = () => {
       transition={{ duration: 0.6 }}
     >
       <h1 className="home-title">Welcome to Support Portal</h1>
+      <button 
+        onClick={handleTestToast}
+        style={{
+          padding: '10px 20px',
+          marginBottom: '20px',
+          backgroundColor: '#4a0e4e',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        Test Toast
+      </button>
 
       <motion.div
         className="home-cards"

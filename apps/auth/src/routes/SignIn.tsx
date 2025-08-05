@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import useCustomToast from '../hooks/useCustomToast';
+import useCustomToast from '@shared-utils/hooks/useCustomToast';
 import { Eye, EyeOff } from 'lucide-react';
 import { isValidEmail, isValidPassword } from 'shared/utils';
 import { setUser } from '@shared-utils/store/authSlice';
+import authApi from '@shared-utils/api/authApi';
+import { setLoggedIn } from '@shared-utils/utils/auth';
 
 const SignIn = () => {
   const [email, setEmail] = React.useState('');
@@ -32,21 +34,27 @@ const SignIn = () => {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const userData = localStorage.getItem(email);
-      if (!userData) throw new Error('User not found');
-
-      const user = JSON.parse(userData);
-      if (user.password !== password) throw new Error('Invalid password');
-
-      // Update Redux store with user data
-      dispatch(setUser({ email: user.email, username: user.username }));
+      const response = await authApi.login({ email, password });
       
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      showSuccessToast('Sign in successful! Redirecting...');
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/');
+      if (response.success && response.data) {
+        console.log('Login response:', response);
+        // Extract only the required user fields
+        const userData = {
+          email: response.data.email,
+          full_name: response.data.full_name,
+          role: response.data.role
+        };
+        // Update Redux store
+        dispatch(setUser(userData));
+        console.log('Dispatched user to Redux store:', userData);
+        
+        // Set login flag before navigation
+        setLoggedIn();
+        showSuccessToast('Sign in successful! Redirecting...');
+        navigate('/');
+      } else {
+        throw new Error(response.message || 'Login failed');
+      }
     } catch (err) {
       setError('Invalid email or password');
       showErrorToast('Invalid email or password');

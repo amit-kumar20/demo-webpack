@@ -40,8 +40,26 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: "babel-loader",
-        exclude: /node_modules/,
+        include: [
+          path.resolve(__dirname, "src"),
+          path.resolve(__dirname, "../../packages/shared-utils/src"),
+          path.resolve(__dirname, "../shared/src")
+        ],
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              ["@babel/preset-typescript", { "isTSX": true, "allExtensions": true }]
+            ],
+            plugins: [
+              "@babel/plugin-transform-runtime",
+              "@babel/plugin-transform-class-properties",
+              "@babel/plugin-transform-object-rest-spread"
+            ]
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -60,6 +78,8 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
       shared: path.resolve(__dirname, "../shared/src"),
+      '@shared-utils': path.resolve(__dirname, "../../packages/shared-utils/src"),
+      '@shared-utils/*': path.resolve(__dirname, "../../packages/shared-utils/src/*"),
     },
   },
 
@@ -101,6 +121,10 @@ module.exports = {
         "@tanstack/react-query": {
           singleton: true,
           requiredVersion: "^4.29.5",
+          eager: true,
+        },
+        "@shared-utils/store": {
+          singleton: true,
           eager: true,
         },
       },
