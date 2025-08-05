@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import useCustomToast from '../hooks/useCustomToast';
-import { setUser } from '@shared-utils/store/authSlice';
 import { isValidEmail, isValidPassword } from 'shared/utils';
 import { Eye, EyeOff } from 'lucide-react';
+import authApi from '@shared-utils/api/authApi';
 
 interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  username: string;
+  full_name: string;
+  // role: 'manager' | 'agent'; // Commented out as role is now defined on the backend
 }
 
 const SignUp: React.FC = () => {
   const { showSuccessToast, showErrorToast } = useCustomToast();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     confirmPassword: '',
-    username: ''
+    full_name: '',
+    // role: 'agent' // Commented out as role is now defined on the backend
   });
 
   const [errors, setErrors] = useState<string[]>([]);
@@ -56,8 +56,8 @@ const SignUp: React.FC = () => {
       newErrors.push('Passwords do not match');
     }
 
-    if (!formData.username) {
-      newErrors.push('Username is required');
+    if (!formData.full_name) {
+      newErrors.push('Full name is required');
     }
 
     setErrors(newErrors);
@@ -70,41 +70,21 @@ const SignUp: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const userData = {
+      const response = await authApi.signup({
         email: formData.email,
-        username: formData.username,
-        password: formData.password // Note: In a real app, never store plain text passwords
-      };
-
-      localStorage.setItem(formData.email, JSON.stringify(userData));
-
-      // Update Redux store with user data (excluding password)
-      dispatch(setUser({
-        email: formData.email,
-        username: formData.username
-      }));
-
-      // Store current user (excluding password)
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: formData.email,
-        username: formData.username
-      }));
-
-      showSuccessToast('Account created successfully! Redirecting...');
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/');
-
-      setFormData({
-        email: '',
-        password: '',
-        confirmPassword: '',
-        username: ''
+        password: formData.password,
+        full_name: formData.full_name,
+        // role: formData.role // Commented out as role is now defined on the backend
       });
+
+      if (response.success) {
+        showSuccessToast('Account created successfully! Please sign in.');
+        navigate('../signin', { replace: true });
+      } else {
+        throw new Error(response.message || 'Failed to create account');
+      }
     } catch (error: unknown) {
       showErrorToast('Failed to create account. Please try again.');
-      console.error('Sign up error:', error);
     }
   };
 
@@ -115,15 +95,30 @@ const SignUp: React.FC = () => {
         <div>
           <input
             type="text"
-            id="username"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
+            id="full_name"
+            name="full_name"
+            placeholder="Full Name"
+            value={formData.full_name}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border rounded text-sm"
           />
         </div>
+        {/* Role selection commented out as it's now defined on the backend
+        <div>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border rounded text-sm"
+          >
+            <option value="agent">Agent</option>
+            <option value="manager">Manager</option>
+          </select>
+        </div>
+        */}
         <div>
           <input
             type="email"

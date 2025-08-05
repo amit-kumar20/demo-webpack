@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
+import { useToast } from 'shared/components';
 
 
 type HomeCard = {

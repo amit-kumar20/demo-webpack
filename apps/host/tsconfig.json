@@ -20,7 +20,9 @@
       "shared/*": ["../shared/src/*"],
       "auth/*": ["../auth/src/*"],
       "ticket/*": ["../ticket/src/*"],
-      "notification/*": ["../notification/src/*"]
+      "notification/*": ["../notification/src/*"],
+      "@shared-utils": ["../../packages/shared-utils/src"],
+      "@shared-utils/*": ["../../packages/shared-utils/src/*"]
     }
   },
   "include": ["src"],

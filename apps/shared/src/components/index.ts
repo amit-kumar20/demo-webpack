@@ -1,3 +1,3 @@
 export * from './ErrorBoundary';
-export { ToastProvider } from './ToastProvider';
+export { ToastProvider, useToast } from './ToastProvider';
 export { default as Notification } from './Notification';

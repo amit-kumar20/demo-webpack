@@ -5,7 +5,7 @@ import App from './App';
 import './index.css';
 
 async function bootstrap() {
-  const { store } = await import('shared/remoteStore');
+  const { store } = await import('@shared-utils');
   const container = document.getElementById('root');
   if (!container) throw new Error('Root element not found');
 
