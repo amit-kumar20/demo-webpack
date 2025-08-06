@@ -12,7 +12,7 @@ interface FormData {
   full_name: string;
   // role: 'manager' | 'agent'; // Commented out as role is now defined on the backend
 }
-
+ 
 const SignUp: React.FC = () => {
   const { showSuccessToast, showErrorToast } = useCustomToast();
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ const SignUp: React.FC = () => {
     if (!formData.password) {
       newErrors.push('Password is required');
     } else if (!isValidPassword(formData.password)) {
-      newErrors.push('Invalid password format');
+      newErrors.push('Invalid password format. Password must be at least 8 characters long and contain uppercase, lowercase, and number.');
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -84,7 +84,7 @@ const SignUp: React.FC = () => {
         throw new Error(response.message || 'Failed to create account');
       }
     } catch (error: unknown) {
-      showErrorToast('Failed to create account. Please try again.');
+      showErrorToast('Invalid password - 8+ chars, upper/lower case & number');
     }
   };
 
