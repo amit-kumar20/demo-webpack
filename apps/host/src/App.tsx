@@ -61,17 +61,16 @@ const AppContent: FC = () => {
     initializeAuth();
   }, []);
 
-  // Protect routes that require authentication
-  if (!isAuthPage && !user) {
-    navigate('/auth');
-    return null;
-  }
-
-  // Redirect to home if already logged in and trying to access auth pages
-  if (isAuthPage && user) {
-    navigate('/');
-    return null;
-  }
+  useEffect(() => {
+    
+    if (!isLoading) {  
+      if (!isAuthPage && !user) {
+        navigate('/auth');
+      } else if (isAuthPage && user) {
+        navigate('/');
+      }
+    }
+  }, [isAuthPage, user, navigate, isLoading]);
 
   // Protected route wrapper
   const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {

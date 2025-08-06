@@ -17,7 +17,7 @@ export interface LoginCredentials {
 
 export interface SignupData extends LoginCredentials {
   full_name: string;
-  role: 'manager' | 'agent';
+  role?: 'manager' | 'agent'; // Made optional since it's now defined on the backend
 }
 
 export interface AuthResponse {

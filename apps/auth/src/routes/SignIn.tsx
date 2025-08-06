@@ -27,8 +27,8 @@ const SignIn = () => {
     }
 
     if (!isValidPassword(password)) {
-      setError('Invalid password format');
-      showErrorToast('Invalid password format');
+      setError('Invalid password format. Password must be at least 8 characters long and contain uppercase, lowercase, and number.');
+      showErrorToast('Invalid password - 8+ chars, upper/lower case & number');
       return;
     }
 
@@ -36,12 +36,10 @@ const SignIn = () => {
       const response = await authApi.login({ email, password });
       
       if (response.success && response.data) {
-        // Set the token if it exists
         if (response.token) {
           authApi.setAuthToken(response.token);
         }
-        
-        // Update Redux store with user data from login response
+       
         dispatch(setUser(response.data));
         showSuccessToast('Sign in successful! Redirecting...');
         navigate('/');
